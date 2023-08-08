@@ -62,9 +62,13 @@ If we observe the 4 patches of a feature that I showed earlier, we can infer som
 The only problem with comparison, though, is we don't know which pair of pixels we should compare. We can get away with comparing each pixel with every other pixels in the patch with two interrelated issues that come up with this idea:
 1. On a patch of size SxS, the resulting binary string of comparing each pixel against each other will obviously be of length Θ(S3). With S := 31, we'll need 29,791 bits which is worse than the 23K bits we needed earlier. This also comes at a cost of doing that much comparison and performing a lot of tedious memory management to support it. That's why we need less comparison than that.
 2. However, if we decrease S to achieve less bits than what we calculated in the previous point, we lose spatial detail and there will be no feature. See for yourself:
-	
+
+![image](https://github.com/KamiliArsyad/posts/assets/22293969/4ee4b666-46a7-4adf-8ed0-40ce66fc0b9a)
+
 
 Naturally we want less comparisons with the same amount of pixels as most of our brute-force comparison are useless anyway: for example, comparing a pixel to its first few immediate neighbors are most likely useless. We want the pixels compared to be kind of spaced apart from each other as much as we can, but we still want some of the pairs' ends to be close to each other just in case we need some close up details. You can start to see now why the Gaussian distribution thing was a brilliant but not an entirely random (pun not intended) idea. It is however not fun to jump into conclusions, so off the authors went to compare the performance of different patches:
+![image](https://github.com/KamiliArsyad/posts/assets/22293969/827a8163-12e2-487e-8e75-246fdb07dcc6)
+
 
 After all the test whose most details were skipped in the paper for understandable conciseness reasons, they found out that distribution G II that is sampled from an isotropic Gaussian distribution with (X, Y) ~ i.i.d Gaussian(0, S2/25) gives the best result.
 
