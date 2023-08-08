@@ -5,11 +5,11 @@ This post is a brief of the "BRIEF: Binary Robust Independent Elementary Feature
 # Encoding Features
 Take a look at the image below.
 
-<img src="https://github.com/KamiliArsyad/posts/assets/22293969/959141bd-79ac-462c-ae6e-cdbc5f00bcc9" width="200">
+<img src="https://github.com/KamiliArsyad/posts/assets/22293969/2c4a49eb-e1e3-425b-bbac-ab2417d5a947" width="200">
 
 Would you be able to construct an imagination of what this is? If you do, then well done! You're a pretty good feature recognizer and we no longer need to store the whole picture for you to store the information in the image. For those of you who don't know what this is, let's take a bit of a step back and see.
 
-<img src="https://github.com/KamiliArsyad/posts/assets/22293969/55235f79-6c9b-4a09-b87f-0ab3b5afb8d2" width="200">
+<img src="https://github.com/KamiliArsyad/posts/assets/22293969/7a379038-4859-4900-9702-b767daf972f1" width="200">
 
 This looks like something metallic and, if the orientation is correct, it looks like it's some kind of a horizontal shiny cylinder. That's a lot of information to extract from a small image patch and that's great because it's probably better to store "horizontal metal cylinder" rather than the whole image.
 
@@ -17,7 +17,7 @@ In other words, we have essentially encoded this image patch as some words to de
 
 Here are some more pixels for you, if you are still curious.
 
-<img src="https://github.com/KamiliArsyad/posts/assets/22293969/12e02eb1-ccda-45d6-a246-a9cf9c3aa2d1" width="200">
+<img src="https://github.com/KamiliArsyad/posts/assets/22293969/dcaebe7d-3ddc-419c-8ad1-fd48ae7e5d46" width="200">
 
 This image gives you more words associated with it: Hand rail, staircase, emergency exit, metal rail, daylight, etc. However, notice that we're now talking about a set of features describing an image. This will come handy for another discussion later but I'm trying to discuss about elementary features so let's stick with a smaller patch. We see now that for most of our uses that deals with elementary features, instead of storing a picture, a small cut out of a picture, or a small patch of a picture, we can just store the encoded descriptor and perhaps the location of where we saw the corresponding feature to save memory.
 
@@ -32,9 +32,8 @@ Another super painful problem in machine learning for computer vision (if we're 
 BRIEF is an algorithm to produce binary descriptors. What I meant by binary descriptors is just a way to say that we encode a feature we want to encode in a binary string of some length. BRIEF algorithm is probably one of the most robust and most used algorithm nowadays to encode features in an image; the only catch is that it's so powerful that the way it works is kinda silly. Let me explain.
 
 If we look at the following images of objects that looked kind of the same (e.g. they have close/similar features) in an image, can you think of a way to somehow encode the 'sameness' of these images (i.e. what makes them look similar)?
-			
-			
-![image](https://github.com/KamiliArsyad/posts/assets/22293969/8968a626-8aa5-4cd0-a382-fc91a0ee9633)
+					
+![image](https://github.com/KamiliArsyad/posts/assets/22293969/30470526-8027-4a76-a006-deff1f55936f)
 
 
 Now I gotta stop you before you think too hard; let's delve a little into how the algorithm works and I'll tell you later why it works:
@@ -63,12 +62,11 @@ The only problem with comparison, though, is we don't know which pair of pixels 
 1. On a patch of size SxS, the resulting binary string of comparing each pixel against each other will obviously be of length Θ(S3). With S := 31, we'll need 29,791 bits which is worse than the 23K bits we needed earlier. This also comes at a cost of doing that much comparison and performing a lot of tedious memory management to support it. That's why we need less comparison than that.
 2. However, if we decrease S to achieve less bits than what we calculated in the previous point, we lose spatial detail and there will be no feature. See for yourself:
 
-![image](https://github.com/KamiliArsyad/posts/assets/22293969/4ee4b666-46a7-4adf-8ed0-40ce66fc0b9a)
-
+![image](https://github.com/KamiliArsyad/posts/assets/22293969/f093225b-e3b1-48a0-81f3-77ddd729f4f4)
 
 Naturally we want less comparisons with the same amount of pixels as most of our brute-force comparison are useless anyway: for example, comparing a pixel to its first few immediate neighbors are most likely useless. We want the pixels compared to be kind of spaced apart from each other as much as we can, but we still want some of the pairs' ends to be close to each other just in case we need some close up details. You can start to see now why the Gaussian distribution thing was a brilliant but not an entirely random (pun not intended) idea. It is however not fun to jump into conclusions, so off the authors went to compare the performance of different patches:
-![image](https://github.com/KamiliArsyad/posts/assets/22293969/827a8163-12e2-487e-8e75-246fdb07dcc6)
 
+![image](https://github.com/KamiliArsyad/posts/assets/22293969/b63ded6a-62db-44fb-8774-882e7ca0d0d9)
 
 After all the test whose most details were skipped in the paper for understandable conciseness reasons, they found out that distribution G II that is sampled from an isotropic Gaussian distribution with (X, Y) ~ i.i.d Gaussian(0, S2/25) gives the best result.
 
@@ -81,8 +79,9 @@ The devil is of course in the detail of how to perform the required memory manag
 
 # Big Cat, Small Cat, and Rotated Cat
 Take a look at these three pictures
+	
+![image](https://github.com/KamiliArsyad/posts/assets/22293969/0b12990b-af20-4cba-8e0d-b60e1a82ad09)
 
-![image](https://github.com/KamiliArsyad/posts/assets/22293969/83a061a4-10ef-4b99-a5cc-e5575303fecd)
 		
 Can you tell the similarities between all of the pictures? First of all, cats are better than dogs. More importantly, all three pictures are feature a cat as their main object of interest. Last but not least, if you haven't noticed yet, they're all the same pictures. I do hope you noticed that because the point I'm trying to make here is that our brain, being the highly performance feature recognizer that they are, possess something called scale and rotational invariance. Regardless of how huge the picture is or how we rotate the picture, for the most part, we'll still be able to associate the same description to the picture. In our minds, a rotated cat is still a cat. Vanilla BRIEF, however, does not possess this ability.
 
